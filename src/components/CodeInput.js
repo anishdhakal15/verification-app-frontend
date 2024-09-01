@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/styles.css';
-require('dotenv').config();
 
 const CodeInput = () => {
   const [code, setCode] = useState(['', '', '', '', '', '']);
