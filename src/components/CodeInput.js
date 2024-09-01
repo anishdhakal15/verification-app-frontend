@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/styles.css';
+require('dotenv').config();
 
 const CodeInput = () => {
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -44,7 +45,7 @@ const CodeInput = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/verify', { code: code.join('') });
+      const response = await axios.post(process.env.SERVER_PATH, { code: code.join('') });
       if (response.data.success) {
         navigate('/success');
       }
