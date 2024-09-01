@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/styles.css';
@@ -9,29 +9,57 @@ const CodeInput = () => {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
 
+  // Auto-focus the first input when the component mounts
+  useEffect(() => {
+    if (inputRefs.current[0]) {
+      inputRefs.current[0].focus();
+    }
+  }, []);
+
   const handleInputChange = (event, index) => {
     const value = event.target.value;
 
-    if (/^\d?$/.test(value)) {
+    // Only allow single-digit numeric input
+    if (/^\d$/.test(value)) {
       const newCode = [...code];
       newCode[index] = value;
       setCode(newCode);
 
-      if (value && index < 5) {
+      // Move focus to the next input field if not the last one
+      if (index < 5) {
         inputRefs.current[index + 1].focus();
       }
+    } else if (value === '') {
+      // Allow the user to clear the input field
+      const newCode = [...code];
+      newCode[index] = '';
+      setCode(newCode);
     }
 
     if (errorMessage) setErrorMessage('');
   };
 
+  const handleKeyPress = (event) => {
+    // Prevent non-numeric keys
+    if (!/^\d$/.test(event.key) && event.key !== 'Backspace') {
+      event.preventDefault();
+    }
+  };
+
   const handlePaste = (event) => {
+    event.preventDefault();  // Prevent the default paste action
     const pasteData = event.clipboardData.getData('Text');
     const digits = pasteData.split('').filter(char => /^\d$/.test(char)).slice(0, 6);
 
-    if (digits.length === 6) {
-      setCode(digits);
-      inputRefs.current[5].focus();  // Automatically focus the last input
+    if (digits.length > 0) {
+      const newCode = [...code];
+      digits.forEach((digit, i) => {
+        newCode[i] = digit;
+      });
+      setCode(newCode);
+      // Move focus to the next available input or the last one
+      const nextFocusIndex = Math.min(digits.length - 1, 5);
+      inputRefs.current[nextFocusIndex].focus();
     }
   };
 
@@ -44,12 +72,12 @@ const CodeInput = () => {
     }
 
     try {
-      const response = await axios.post(process.env.SERVER_PATH, { code: code.join('') });
+      const response = await axios.post(process.env.REACT_APP_SERVER_PATH, { code: code.join('') });
       if (response.data.success) {
         navigate('/success');
       }
     } catch (error) {
-      setErrorMessage('Verification Error');
+      setErrorMessage('Verification Error.');
     }
   };
 
@@ -62,9 +90,11 @@ const CodeInput = () => {
             type="text"
             value={digit}
             onChange={(e) => handleInputChange(e, index)}
+            onKeyPress={handleKeyPress}
             onPaste={handlePaste}
             maxLength="1"
             ref={(el) => (inputRefs.current[index] = el)}
+            aria-label={`Digit ${index + 1}`}
             className={`code-input ${digit === '' || !/^\d$/.test(digit) ? 'error' : ''}`}
           />
         ))}

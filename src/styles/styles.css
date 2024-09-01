@@ -14,12 +14,15 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 300px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 20px;
 }
 
 .input-group {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .code-input {
@@ -54,9 +57,9 @@ body {
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  margin-top: 20px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100%;
 }
 
 .submit-button:hover {
@@ -71,14 +74,4 @@ body {
   color: #ef4444;
   margin-top: 10px;
   font-weight: bold;
-}
-
-.success-page {
-  text-align: center;
-  padding: 2rem;
-}
-
-.success-page h1 {
-  color: #10b981;
-  font-size: 2rem;
 }
